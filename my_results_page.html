@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My API Results Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <header class="bg-white shadow p-4">
+    <h1 class="text-2xl font-bold">Welcome to My Results Page 🚀</h1>
+    <p class="text-gray-600">This page fetches data from a demo API. You can customize it later!</p>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6">
+    <button id="fetchBtn" class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
+      Fetch Demo Results
+    </button>
+
+    <div id="status" class="mt-4 text-sm text-gray-600"></div>
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6"></div>
+  </main>
+
+  <script>
+    const btn = document.getElementById("fetchBtn");
+    const grid = document.getElementById("grid");
+    const status = document.getElementById("status");
+
+    function el(tag, cls) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      return e;
+    }
+
+    btn.addEventListener("click", async () => {
+      status.textContent = "Fetching data...";
+      grid.innerHTML = "";
+      try {
+        const res = await fetch("https://api.publicapis.org/entries?https=true");
+        const data = await res.json();
+        const entries = data.entries || [];
+        status.textContent = `Loaded ${entries.length} results.`;
+        entries.slice(0, 12).forEach(it => {
+          const card = el("div", "p-4 border rounded bg-white shadow");
+          const title = el("h2", "font-semibold text-lg mb-2");
+          title.textContent = it.API;
+          const desc = el("p", "text-sm text-gray-600 mb-2");
+          desc.textContent = it.Description;
+          const link = el("a", "text-blue-600 underline");
+          link.href = it.Link;
+          link.target = "_blank";
+          link.textContent = "Visit";
+          card.appendChild(title);
+          card.appendChild(desc);
+          card.appendChild(link);
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        status.textContent = "Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
